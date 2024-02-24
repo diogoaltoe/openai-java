@@ -10,9 +10,21 @@ $ git clone https://github.com/diogoaltoe/openai-java.git
 
 ## Usage
 
-#### application.properties
-- Create the application.properties file inside `src/main/resources`
-- Add the `openai-api-key` environment variable with your OpenAi API key (eg.: `openai-api-key=XXXXXXXXXXXX`)
+#### Environment Variable
+In the `application.properties` file inside `src/main/resources` folder, set:
+  - `openai-api-key=${OPENAI_API_KEY}` with your OpenAi API key.
+
+
+## Features
+- Token Counter
+- OpenAI Chat
+- OpenAI Assistant
+- OpenAI Exception Handler
+- Communication with Stream
+- Keep thread history
+- Clear thread history
+- Knowledge Retrieval
+- Function Calling
 
 
 ## Libraries

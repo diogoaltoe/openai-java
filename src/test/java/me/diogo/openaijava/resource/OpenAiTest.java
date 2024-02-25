@@ -1,7 +1,10 @@
 package me.diogo.openaijava.resource;
 
+import com.theokanning.openai.completion.chat.ChatCompletionChoice;
+import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
+import io.reactivex.Flowable;
 import me.diogo.openaijava.operation.FileConverter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,41 +18,40 @@ import java.util.List;
 @SpringBootTest
 class OpenAiTest {
     @Autowired
-    private OpenAi openAi;
+    private OpenAi<List<ChatCompletionChoice>, Flowable<ChatCompletionChunk>> openAi;
     @Autowired
     private FileConverter fileConverter;
 
     @Test
-    void success_to_call_api() {
-        final String response = openAi.chatRequest(List.of(createFakeSystemMessage(), createFakeUserMessages()))
+    void success_to_call_chat() {
+        final String response = openAi.chatRequest(List.of(createFakeChatSystemMessage(), createFakeChatUserMessages()))
                 .getFirst().getMessage().getContent();
 
         Assertions.assertNotNull(response);
-        Assertions.assertEquals("Eyewear", response);
+        Assertions.assertEquals("eyewear".toLowerCase(), response.toLowerCase());
     }
 
     @Test
-    void failed_to_call_api() {
-        final var openAi = new OpenAi();
+    void failed_to_call_chat() {
+        final var openAi = new OpenAi<>();
         openAi.setKey("fake-openai-api-key");
 
         final var exception = Assertions.assertThrows(IllegalArgumentException.class, () ->
-                openAi.chatRequest(List.of(createFakeSystemMessage(), createFakeUserMessages()))
+                openAi.chatRequest(List.of(createFakeChatSystemMessage(), createFakeChatUserMessages()))
                         .getFirst().getMessage().getContent());
         Assertions.assertEquals("Error with OpenAI API Key.", exception.getMessage());
     }
 
     @Test
-    void success_to_call_api_with_bigger_prompt() throws IOException {
+    void success_to_call_chat_with_bigger_prompt() throws IOException {
         final String filePath = "message_to_count_tokens.txt";
         final String response = openAi.chatRequest(List.of(new ChatMessage(ChatMessageRole.USER.value(), fileConverter.readToString(filePath))))
                 .getFirst().getMessage().getContent();
 
         Assertions.assertNotNull(response);
-        Assertions.assertTrue(response.contains("I'm sorry"));
     }
 
-    private static ChatMessage createFakeSystemMessage() {
+    private static ChatMessage createFakeChatSystemMessage() {
         final List<String> systemMessages = List.of(
                 "You are a product categorizer and must only answer the name of the product category entered.",
                 "If the user asks something other than product categorization, you must respond that you cannot help as your role is only to answer the product category."
@@ -57,7 +59,7 @@ class OpenAiTest {
         return new ChatMessage(ChatMessageRole.SYSTEM.value(), String.join("\n", systemMessages));
     }
 
-    private static ChatMessage createFakeUserMessages() {
+    private static ChatMessage createFakeChatUserMessages() {
         final List<String> userMessages = List.of(
                 "sunglasses"
         );

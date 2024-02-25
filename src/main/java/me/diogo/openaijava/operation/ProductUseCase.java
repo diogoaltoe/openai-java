@@ -1,7 +1,10 @@
 package me.diogo.openaijava.operation;
 
+import com.theokanning.openai.completion.chat.ChatCompletionChoice;
+import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
+import io.reactivex.Flowable;
 import me.diogo.openaijava.resource.OpenAi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,7 +14,7 @@ import java.util.List;
 @Component
 public class ProductUseCase {
     @Autowired
-    private OpenAi openAi;
+    private OpenAi<List<ChatCompletionChoice>, Flowable<ChatCompletionChunk>> openAi;
 
     public String findCategory(final String product) {
         final List<String> systemRules = List.of(

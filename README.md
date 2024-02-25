@@ -1,4 +1,4 @@
-# openai-java
+# OpenAI Java
 OpenAI GPT integration project using Java.
 
 ## Installation
@@ -10,16 +10,19 @@ $ git clone https://github.com/diogoaltoe/openai-java.git
 
 ## Usage
 
-#### Environment Variable
+### Environment Variable
 In the `application.properties` file inside `src/main/resources` folder, set:
   - `openai-api-key=${OPENAI_API_KEY}` with your OpenAi API key.
 
+### Swagger
+After run the `MainApplication`, to access the Swagger page, open this link: http://localhost:8080/swagger
 
 ## Features
-- Token Counter
 - OpenAI Chat
 - OpenAI Assistant
+- Token Counter
 - OpenAI Exception Handler
+- SpringDoc OpenAPI UI
 - Communication with Stream
 - Keep thread history
 - Clear thread history
@@ -32,6 +35,8 @@ In the `application.properties` file inside `src/main/resources` folder, set:
 - [Spring Boot](https://spring.io/)
 - [Lombok](https://projectlombok.org/)
 - [Theo Kanning - openai-java](https://github.com/TheoKanning/openai-java)
+- [SpringDoc OpenAPI UI](https://springdoc.org/)
+- [JTokkit - Java Tokenizer Kit](https://github.com/knuddelsgmbh/jtokkit)
 
 
 ## License

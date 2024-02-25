@@ -1,4 +1,4 @@
-package me.diogo.openaijava.resource;
+package me.diogo.openaijava.infra;
 
 import com.theokanning.openai.OpenAiHttpException;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;

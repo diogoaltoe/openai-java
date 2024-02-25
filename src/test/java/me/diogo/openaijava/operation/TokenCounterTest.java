@@ -14,21 +14,21 @@ class TokenCounterTest {
     private FileConverter fileConverter;
 
     @Test
-    void success_to_count_tokens() {
+    void successToCountTokens() {
         final String prompt = "You are a product categorizer and must only answer the name of the product category entered.";
 
         Assertions.assertEquals(18, TokenCounter.count(OpenAiModel.getDefault().getName(), prompt));
     }
 
     @Test
-    void success_to_count_tokens_from_file() throws IOException {
+    void successToCountTokensFromFile() throws IOException {
         final String filePath = "message_to_count_tokens.txt";
 
         Assertions.assertEquals(17799, TokenCounter.count(OpenAiModel.getDefault().getName(), fileConverter.readToString(filePath)));
     }
 
     @Test
-    void failed_to_count_tokens() {
+    void failedToCountTokens() {
         final String model = "fake-gpt";
         final String prompt = "You are a product categorizer and must only answer the name of the product category entered.";
 

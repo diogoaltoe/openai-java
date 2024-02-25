@@ -5,21 +5,21 @@ import org.junit.jupiter.api.Test;
 
 class OpenAiModelTest {
     @Test
-    void success_to_get_most_updated_model() {
+    void successToGetMostUpdatedModel() {
         Assertions.assertEquals(OpenAiModel.GPT_4_0125_PREVIEW, OpenAiModel.mostUpdated());
     }
 
     @Test
-    void success_to_get_most_tokens_model() {
+    void successToGetMostTokensModel() {
         Assertions.assertEquals(OpenAiModel.GPT_4_0125_PREVIEW, OpenAiModel.mostTokens());
     }
     @Test
-    void success_to_get_lowest_price_model() {
+    void successToGetLowestPriceModel() {
         Assertions.assertEquals(OpenAiModel.GPT_35_TURBO_0125, OpenAiModel.lowestPrice());
     }
 
     @Test
-    void success_to_get_default_model() {
+    void successToGetDefaultModel() {
         Assertions.assertEquals(OpenAiModel.GPT_35_TURBO_0125, OpenAiModel.getDefault());
     }
 

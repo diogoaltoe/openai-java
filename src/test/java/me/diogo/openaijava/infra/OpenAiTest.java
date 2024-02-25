@@ -1,4 +1,4 @@
-package me.diogo.openaijava.resource;
+package me.diogo.openaijava.infra;
 
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
@@ -23,7 +23,7 @@ class OpenAiTest {
     private FileConverter fileConverter;
 
     @Test
-    void success_to_call_chat() {
+    void successToCallChat() {
         final String response = openAi.chatRequest(List.of(createFakeChatSystemMessage(), createFakeChatUserMessages()))
                 .getFirst().getMessage().getContent();
 
@@ -32,7 +32,7 @@ class OpenAiTest {
     }
 
     @Test
-    void failed_to_call_chat() {
+    void failedToCallChat() {
         final var openAi = new OpenAi<>();
         openAi.setKey("fake-openai-api-key");
 
@@ -43,7 +43,7 @@ class OpenAiTest {
     }
 
     @Test
-    void success_to_call_chat_with_bigger_prompt() throws IOException {
+    void successToCallChatWithBiggerPrompt() throws IOException {
         final String filePath = "message_to_count_tokens.txt";
         final String response = openAi.chatRequest(List.of(new ChatMessage(ChatMessageRole.USER.value(), fileConverter.readToString(filePath))))
                 .getFirst().getMessage().getContent();

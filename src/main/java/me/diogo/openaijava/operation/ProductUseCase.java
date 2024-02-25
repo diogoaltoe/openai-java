@@ -5,7 +5,7 @@ import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import io.reactivex.Flowable;
-import me.diogo.openaijava.resource.OpenAi;
+import me.diogo.openaijava.infra.OpenAi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class ProductUseCase {
     private OpenAi<List<ChatCompletionChoice>, Flowable<ChatCompletionChunk>> openAi;
 
     public String findCategory(final String product) {
-        final List<String> systemRules = List.of(
+        final var systemRules = List.of(
                 "You are a product categorizer and must only answer the name of the product category entered.",
                 "Choose a category from the list below:\n" +
                 "    Electronics\n" +

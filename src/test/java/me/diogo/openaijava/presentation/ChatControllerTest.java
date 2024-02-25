@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -19,9 +19,10 @@ class ChatControllerTest {
     @Test
     public void testAnswerQuestion() {
         final var request = new QuestionRequest("What is an ecommerce?");
-        ResponseEntity<String> response = restTemplate.postForEntity("/chat", request, String.class);
+        final var response = restTemplate.postForEntity("/chat", request, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertTrue(response.getBody().contains("Ecommerce"));
     }
 }

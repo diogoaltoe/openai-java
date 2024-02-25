@@ -6,7 +6,7 @@ import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import io.reactivex.Flowable;
 import me.diogo.openaijava.presentation.dto.QuestionRequest;
-import me.diogo.openaijava.resource.OpenAi;
+import me.diogo.openaijava.infra.OpenAi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

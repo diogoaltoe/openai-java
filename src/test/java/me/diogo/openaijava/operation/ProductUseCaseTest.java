@@ -11,7 +11,7 @@ class ProductUseCaseTest {
     ProductUseCase productUseCase;
 
     @Test
-    void success_to_get_category() {
+    void successToGetCategory() {
         final String category = productUseCase.findCategory("sunglasses");
 
         Assertions.assertNotNull(category);

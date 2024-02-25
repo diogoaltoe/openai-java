@@ -22,7 +22,7 @@ After run the `MainApplication`, to access the Swagger page, open this link: htt
 - OpenAI Assistant
 - Token Counter
 - OpenAI Exception Handler
-- SpringDoc OpenAPI UI
+- SpringDoc OpenAPI UI (Swagger)
 - Communication with Stream
 - Keep thread history
 - Clear thread history

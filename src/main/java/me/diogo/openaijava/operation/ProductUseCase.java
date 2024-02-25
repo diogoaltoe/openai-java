@@ -5,7 +5,7 @@ import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import io.reactivex.Flowable;
-import me.diogo.openaijava.infra.OpenAi;
+import me.diogo.openaijava.infra.OpenAiClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class ProductUseCase {
     @Autowired
-    private OpenAi<List<ChatCompletionChoice>, Flowable<ChatCompletionChunk>> openAi;
+    private OpenAiClient<List<ChatCompletionChoice>, Flowable<ChatCompletionChunk>> openAiClient;
 
     public String findCategory(final String product) {
         final var systemRules = List.of(
@@ -36,7 +36,7 @@ public class ProductUseCase {
         final var system = new ChatMessage(ChatMessageRole.SYSTEM.value(), String.join("\n", systemRules));
         final var user = new ChatMessage(ChatMessageRole.USER.value(), product);
 
-        return openAi
+        return openAiClient
                 .chatRequest(List.of(system, user))
                 .getFirst()
                 .getMessage()

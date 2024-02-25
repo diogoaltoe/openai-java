@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class OpenAi<T extends List<ChatCompletionChoice>, S extends Flowable<ChatCompletionChunk>> {
+public class OpenAiClient<T extends List<ChatCompletionChoice>, S extends Flowable<ChatCompletionChunk>> {
     @Setter
     @Value("${openai-api-key}")
     protected String key;

@@ -16,24 +16,24 @@ import java.util.List;
 
 
 @SpringBootTest
-class OpenAiTest {
+class OpenAiClientTest {
     @Autowired
-    private OpenAi<List<ChatCompletionChoice>, Flowable<ChatCompletionChunk>> openAi;
+    private OpenAiClient<List<ChatCompletionChoice>, Flowable<ChatCompletionChunk>> openAiClient;
     @Autowired
     private FileConverter fileConverter;
 
     @Test
     void successToCallChat() {
-        final String response = openAi.chatRequest(List.of(createFakeChatSystemMessage(), createFakeChatUserMessages()))
+        final String response = openAiClient.chatRequest(List.of(createFakeChatSystemMessage(), createFakeChatUserMessages()))
                 .getFirst().getMessage().getContent();
 
         Assertions.assertNotNull(response);
-        Assertions.assertEquals("eyewear".toLowerCase(), response.toLowerCase());
+        Assertions.assertEquals("Apparel and Fashion", response);
     }
 
     @Test
     void failedToCallChat() {
-        final var openAi = new OpenAi<>();
+        final var openAi = new OpenAiClient<>();
         openAi.setKey("fake-openai-api-key");
 
         final var exception = Assertions.assertThrows(IllegalArgumentException.class, () ->
@@ -45,7 +45,7 @@ class OpenAiTest {
     @Test
     void successToCallChatWithBiggerPrompt() throws IOException {
         final String filePath = "message_to_count_tokens.txt";
-        final String response = openAi.chatRequest(List.of(new ChatMessage(ChatMessageRole.USER.value(), fileConverter.readToString(filePath))))
+        final String response = openAiClient.chatRequest(List.of(new ChatMessage(ChatMessageRole.USER.value(), fileConverter.readToString(filePath))))
                 .getFirst().getMessage().getContent();
 
         Assertions.assertNotNull(response);
@@ -54,6 +54,18 @@ class OpenAiTest {
     private static ChatMessage createFakeChatSystemMessage() {
         final List<String> systemMessages = List.of(
                 "You are a product categorizer and must only answer the name of the product category entered.",
+                "Choose a category from the list below:\n" +
+                        "    Electronics\n" +
+                        "    Apparel and Fashion\n" +
+                        "    Home and Kitchen Appliances\n" +
+                        "    Beauty and Personal Care\n" +
+                        "    Automotive Parts and Accessories\n" +
+                        "    Sports and Outdoor Equipment\n" +
+                        "    Books and Media\n" +
+                        "    Toys and Games\n" +
+                        "    Health and Wellness Products\n" +
+                        "    Furniture and Home Decor\n",
+                        "    Others",
                 "If the user asks something other than product categorization, you must respond that you cannot help as your role is only to answer the product category."
         );
         return new ChatMessage(ChatMessageRole.SYSTEM.value(), String.join("\n", systemMessages));

@@ -6,7 +6,7 @@ import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import io.reactivex.Flowable;
 import me.diogo.openaijava.presentation.dto.QuestionRequest;
-import me.diogo.openaijava.infra.OpenAi;
+import me.diogo.openaijava.infra.OpenAiClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class ChatUseCase {
     @Autowired
-    private OpenAi<List<ChatCompletionChoice>, Flowable<ChatCompletionChunk>> openAi;
+    private OpenAiClient<List<ChatCompletionChoice>, Flowable<ChatCompletionChunk>> openAiClient;
 
     public Flowable<ChatCompletionChunk> answerQuestion(QuestionRequest request) {
         final List<String> systemRules = List.of(
@@ -24,6 +24,6 @@ public class ChatUseCase {
         final var system = new ChatMessage(ChatMessageRole.SYSTEM.value(), String.join("\n", systemRules));
         final var user = new ChatMessage(ChatMessageRole.USER.value(), request.question());
 
-        return openAi.chatRequestStream(List.of(system, user));
+        return openAiClient.chatRequestStream(List.of(system, user));
     }
 }

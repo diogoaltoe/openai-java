@@ -3,7 +3,7 @@ package me.diogo.openaijava.model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class OpenAiModelTest {
+class OpenAiClientModelTest {
     @Test
     void successToGetMostUpdatedModel() {
         Assertions.assertEquals(OpenAiModel.GPT_4_0125_PREVIEW, OpenAiModel.mostUpdated());

@@ -190,7 +190,7 @@ public class OpenAiClient<T extends List<ChatCompletionChoice>, S extends Flowab
         }
     }
 
-    public static String extractContent(final Optional<Message> message) {
+    public static String cleanContent(final Optional<Message> message) {
         return message.map(value -> value
                 .getContent()
                 .getFirst()

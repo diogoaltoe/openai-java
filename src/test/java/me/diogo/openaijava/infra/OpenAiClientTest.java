@@ -96,9 +96,9 @@ class OpenAiClientTest {
         final var response = openAiClient.assistantRequest("List two products that you sell?", null);
 
         assertTrue(response.isPresent());
-        assertTrue(response.get().getContent().getFirst().getText().getValue().contains("1"));
-        assertTrue(response.get().getContent().getFirst().getText().getValue().contains("2"));
-        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("3"));
+        assertTrue(OpenAiClient.cleanContent(response).contains("1"));
+        assertTrue(OpenAiClient.cleanContent(response).contains("2"));
+        assertFalse(OpenAiClient.cleanContent(response).contains("3"));
     }
 
     @Test
@@ -106,9 +106,9 @@ class OpenAiClientTest {
         final var response = openAiClient.assistantRequest("Could you list more two?", null);
 
         assertTrue(response.isPresent());
-        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("1"));
-        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("2"));
-        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("3"));
+        assertFalse(OpenAiClient.cleanContent(response).contains("1"));
+        assertFalse(OpenAiClient.cleanContent(response).contains("2"));
+        assertFalse(OpenAiClient.cleanContent(response).contains("3"));
     }
 
     @Test
@@ -116,17 +116,17 @@ class OpenAiClientTest {
         final var firstResponse = openAiClient.assistantRequest("List two products that you sell?", null);
 
         assertTrue(firstResponse.isPresent());
-        assertTrue(firstResponse.get().getContent().getFirst().getText().getValue().contains("1"));
-        assertTrue(firstResponse.get().getContent().getFirst().getText().getValue().contains("2"));
-        assertFalse(firstResponse.get().getContent().getFirst().getText().getValue().contains("3"));
+        assertTrue(OpenAiClient.cleanContent(firstResponse).contains("1"));
+        assertTrue(OpenAiClient.cleanContent(firstResponse).contains("2"));
+        assertFalse(OpenAiClient.cleanContent(firstResponse).contains("3"));
 
         final var response = openAiClient.assistantRequest("Could you list more two?", firstResponse.get().getThreadId());
 
         assertTrue(response.isPresent());
-        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("1"));
-        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("2"));
-        assertTrue(response.get().getContent().getFirst().getText().getValue().contains("3"));
-        assertTrue(response.get().getContent().getFirst().getText().getValue().contains("4"));
-        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("5"));
+        assertFalse(OpenAiClient.cleanContent(response).contains("1"));
+        assertFalse(OpenAiClient.cleanContent(response).contains("2"));
+        assertTrue(OpenAiClient.cleanContent(response).contains("3"));
+        assertTrue(OpenAiClient.cleanContent(response).contains("4"));
+        assertFalse(OpenAiClient.cleanContent(response).contains("5"));
     }
 }

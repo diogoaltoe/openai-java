@@ -6,16 +6,28 @@ OpenAI GPT integration project using Java.
 ## Features
 
 This project provide the below features:
-- OpenAI Chat
-- OpenAI Assistants
-- Token Counter
-- OpenAI Exception Handler
-- SpringDoc OpenAPI UI (Swagger)
-- Communication with Stream
-- Assistant keeping or not the thread history
-- Knowledge Retrieval
-- Function Calling
-
+- `OpenAI Chat`
+  - "Given a list of messages comprising a conversation, the model will return a response."
+  - Reference: https://platform.openai.com/docs/api-reference/chat
+- `OpenAI Assistants`
+  - "The Assistants API allows you to build AI assistants within your own applications. An Assistant has instructions and can leverage models, tools, and knowledge to respond to user queries."
+  - Reference: https://platform.openai.com/docs/assistants/overview
+- `Token Counter`
+  - Counts how many tokens exist in the input, estimate the output tokens, and then select a proper model to use it.   
+- `OpenAI Exception Handler`
+  - Consider specific exception scenarios to handle it. 
+- `SpringDoc OpenAPI UI (Swagger)`
+  - Library that helps to automate the generation of API documentation and provide an interface to test the solution. 
+- `Communication with Stream`
+  - Return the response in a asynchronous way.
+- `Thread History`
+  - Assistant will consider or not the previous conversation in the future responses.
+- `Knowledge Retrieval`
+  - "Retrieval augments the Assistant with knowledge from outside its model, such as proprietary product information or documents provided by your users. Once a file is uploaded and passed to the Assistant, OpenAI will automatically chunk your documents, index and store the embeddings, and implement vector search to retrieve relevant content to answer user queries."
+  - Reference: https://platform.openai.com/docs/assistants/tools/knowledge-retrieval
+- `Function Calling`
+  - "Similar to the Chat Completions API, the Assistants API supports function calling. Function calling allows you to describe functions to the Assistants and have it intelligently return the functions that need to be called along with their arguments. The Assistants API will pause execution during a Run when it invokes functions, and you can supply the results of the function call back to continue the Run execution."
+  - Reference: https://platform.openai.com/docs/assistants/tools/function-calling
 
 ## Installation
 

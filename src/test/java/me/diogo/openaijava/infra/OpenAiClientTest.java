@@ -6,13 +6,18 @@ import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import io.reactivex.Flowable;
 import me.diogo.openaijava.operation.FileConverter;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @SpringBootTest
@@ -22,37 +27,40 @@ class OpenAiClientTest {
     @Autowired
     private FileConverter fileConverter;
 
+    /*
+     * CHAT
+     */
+
     @Test
     void successToCallChat() {
-        final String response = openAiClient.chatRequest(List.of(createFakeChatSystemMessage(), createFakeChatUserMessages()))
+        final var response = openAiClient.chatRequest(List.of(createFakeChatSystemMessage(), createFakeChatUserMessages()))
                 .getFirst().getMessage().getContent();
 
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals("Apparel and Fashion", response);
+        assertNotNull(response);
+        assertEquals("Apparel and Fashion", response);
     }
 
     @Test
     void failedToCallChat() {
-        final var openAi = new OpenAiClient<>();
-        openAi.setKey("fake-openai-api-key");
+        final var openAiClient = new OpenAiClient<>("fake-openai-api-key", null);
 
-        final var exception = Assertions.assertThrows(IllegalArgumentException.class, () ->
-                openAi.chatRequest(List.of(createFakeChatSystemMessage(), createFakeChatUserMessages()))
+        final var exception = assertThrows(IllegalArgumentException.class, () ->
+                openAiClient.chatRequest(List.of(createFakeChatSystemMessage(), createFakeChatUserMessages()))
                         .getFirst().getMessage().getContent());
-        Assertions.assertEquals("Error with OpenAI API Key.", exception.getMessage());
+        assertEquals("Error with OpenAI API Key.", exception.getMessage());
     }
 
     @Test
     void successToCallChatWithBiggerPrompt() throws IOException {
-        final String filePath = "message_to_count_tokens.txt";
-        final String response = openAiClient.chatRequest(List.of(new ChatMessage(ChatMessageRole.USER.value(), fileConverter.readToString(filePath))))
+        final var filePath = "message_to_count_tokens.txt";
+        final var response = openAiClient.chatRequest(List.of(new ChatMessage(ChatMessageRole.USER.value(), fileConverter.readToString(filePath))))
                 .getFirst().getMessage().getContent();
 
-        Assertions.assertNotNull(response);
+        assertNotNull(response);
     }
 
     private static ChatMessage createFakeChatSystemMessage() {
-        final List<String> systemMessages = List.of(
+        final var systemMessages = List.of(
                 "You are a product categorizer and must only answer the name of the product category entered.",
                 "Choose a category from the list below:\n" +
                         "    Electronics\n" +
@@ -72,9 +80,53 @@ class OpenAiClientTest {
     }
 
     private static ChatMessage createFakeChatUserMessages() {
-        final List<String> userMessages = List.of(
+        final var userMessages = List.of(
                 "sunglasses"
         );
         return new ChatMessage(ChatMessageRole.USER.value(), String.join("\n", userMessages));
+    }
+
+
+    /*
+     * ASSISTANT
+     */
+
+    @Test
+    void successToCallAssistant() {
+        final var response = openAiClient.assistantRequest("List two products that you sell?", null);
+
+        assertTrue(response.isPresent());
+        assertTrue(response.get().getContent().getFirst().getText().getValue().contains("1"));
+        assertTrue(response.get().getContent().getFirst().getText().getValue().contains("2"));
+        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("3"));
+    }
+
+    @Test
+    void successToCallAssistantWithoutHistory() {
+        final var response = openAiClient.assistantRequest("Could you list more two?", null);
+
+        assertTrue(response.isPresent());
+        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("1"));
+        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("2"));
+        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("3"));
+    }
+
+    @Test
+    void successToCallAssistantWithHistory() {
+        final var firstResponse = openAiClient.assistantRequest("List two products that you sell?", null);
+
+        assertTrue(firstResponse.isPresent());
+        assertTrue(firstResponse.get().getContent().getFirst().getText().getValue().contains("1"));
+        assertTrue(firstResponse.get().getContent().getFirst().getText().getValue().contains("2"));
+        assertFalse(firstResponse.get().getContent().getFirst().getText().getValue().contains("3"));
+
+        final var response = openAiClient.assistantRequest("Could you list more two?", firstResponse.get().getThreadId());
+
+        assertTrue(response.isPresent());
+        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("1"));
+        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("2"));
+        assertTrue(response.get().getContent().getFirst().getText().getValue().contains("3"));
+        assertTrue(response.get().getContent().getFirst().getText().getValue().contains("4"));
+        assertFalse(response.get().getContent().getFirst().getText().getValue().contains("5"));
     }
 }

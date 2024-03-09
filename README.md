@@ -21,9 +21,15 @@ To use `Assistants` feature, you need to:
 - Select `Assistants` option;
 - Create a new assistant;
 - In `Name` field, give a proper name for it;
+- In `Instructions` field, add these instructions:
+```
+  You are a chatbot for an ecommerce app.
+  Try to be direct in you answer.
+  If someone ask you to list something, use list numbers.
+```
 - Copy the `Assistant ID` that is below to the `Name` field;
 - In the `application.properties` file inside `src/main/resources` folder, add:
-  - openai.assistant.id={with-copied-assistant-id}
+  - openai.assistant.id={with-copied-assistant-id} 
 
 ### Knowledge Retrieval
 

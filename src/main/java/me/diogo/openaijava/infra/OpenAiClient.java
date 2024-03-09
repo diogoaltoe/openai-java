@@ -196,6 +196,6 @@ public class OpenAiClient<T extends List<ChatCompletionChoice>, S extends Flowab
                 .getFirst()
                 .getText()
                 .getValue()
-                .replaceAll("\\\u3010.*?\\\u3011", "")).orElse(null);
+                .replaceAll("\\u3010.*?\\u3011", "")).orElse(null);
     }
 }

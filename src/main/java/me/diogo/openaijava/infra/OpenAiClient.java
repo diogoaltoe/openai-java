@@ -1,15 +1,21 @@
 package me.diogo.openaijava.infra;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.theokanning.openai.OpenAiHttpException;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+import com.theokanning.openai.completion.chat.ChatFunction;
+import com.theokanning.openai.completion.chat.ChatFunctionCall;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.messages.Message;
 import com.theokanning.openai.messages.MessageRequest;
 import com.theokanning.openai.runs.Run;
 import com.theokanning.openai.runs.RunCreateRequest;
+import com.theokanning.openai.runs.SubmitToolOutputRequestItem;
+import com.theokanning.openai.runs.SubmitToolOutputsRequest;
+import com.theokanning.openai.service.FunctionExecutor;
 import com.theokanning.openai.service.OpenAiService;
 import com.theokanning.openai.threads.ThreadRequest;
 import io.reactivex.Flowable;
@@ -133,7 +139,7 @@ public class OpenAiClient<T extends List<ChatCompletionChoice>, S extends Flowab
      * ASSISTANT
      */
 
-    public Optional<Message> assistantRequest(final String userPrompt, String threadId) {
+    public Optional<Message> assistantRequest(final String userPrompt, String threadId, final ChatFunction function) {
         final var messageRequest = MessageRequest
                 .builder()
                 .role(ChatMessageRole.USER.value())
@@ -163,7 +169,7 @@ public class OpenAiClient<T extends List<ChatCompletionChoice>, S extends Flowab
                 .build();
         var run = service.createRun(threadId, runCreateRequest);
 
-        waitForRunComplete(threadId, run);
+        waitForRunComplete(threadId, run, function);
         log.info("Run is completed.");
 
         final var messages = service.listMessages(threadId);
@@ -175,19 +181,24 @@ public class OpenAiClient<T extends List<ChatCompletionChoice>, S extends Flowab
                 .max(Comparator.comparingInt(Message::getCreatedAt));
     }
 
-    private void waitForRunComplete(final String threadId, final Run run) {
+    private void waitForRunComplete(final String threadId, final Run run, final ChatFunction function) {
         final var retrieveRun = service.retrieveRun(threadId, run.getId());
         log.info("The current run status is: {}", retrieveRun.getStatus());
 
-        if (!retrieveRun.getStatus().equalsIgnoreCase("completed")) {
-            log.info("A new status verification will be made soon.");
+        if (!retrieveRun.getStatus().equalsIgnoreCase("completed") && Objects.isNull(retrieveRun.getRequiredAction())) {
+            log.info("A new status and required action verification will be made soon.");
             try {
                 Thread.sleep(1000L);
             } catch (InterruptedException e) {
-                throw new RuntimeException("Error when sleeping before new status check.", e);
+                throw new RuntimeException("Error when sleeping before new status and required action check.", e);
             }
-            waitForRunComplete(threadId, run);
+            waitForRunComplete(threadId, retrieveRun, function);
         }
+
+        // return if is completed status
+        if (Objects.isNull(retrieveRun.getRequiredAction())) return;
+
+        prepareFunction(threadId, retrieveRun, function);
     }
 
     public static String cleanContent(final Optional<Message> message) {
@@ -198,4 +209,42 @@ public class OpenAiClient<T extends List<ChatCompletionChoice>, S extends Flowab
                 .getValue()
                 .replaceAll("\\u3010.*?\\u3011", "")).orElse(null);
     }
+
+    private void prepareFunction(final String threadId, final Run run, final ChatFunction function) {
+        if (Objects.isNull(function)) return;
+
+        log.info("Calling the function: {}", function.getName());
+
+        final var functionResponse = callFunction(run, function);
+        final var submitRequest = SubmitToolOutputsRequest
+                .builder()
+                .toolOutputs(List.of(
+                        new SubmitToolOutputRequestItem(
+                                run
+                                        .getRequiredAction()
+                                        .getSubmitToolOutputs()
+                                        .getToolCalls()
+                                        .getFirst()
+                                        .getId(),
+                                functionResponse
+                        )
+                ))
+                .build();
+        service.submitToolOutputs(threadId, run.getId(), submitRequest);
+
+        waitForRunComplete(threadId, run, function);
+    }
+
+    private static String callFunction(final Run run, final ChatFunction chatFunction) {
+        try {
+            var functionExecutor = new FunctionExecutor(Collections.singletonList(chatFunction));
+            var function = run.getRequiredAction().getSubmitToolOutputs().getToolCalls().get(0).getFunction();
+            var functionCall = new ChatFunctionCall(function.getName(), new ObjectMapper().readTree(function.getArguments()));
+            return functionExecutor.execute(functionCall).toString();
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Error when calling the function.", e);
+        }
+    }
+
 }

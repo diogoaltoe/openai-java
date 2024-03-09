@@ -5,6 +5,7 @@ import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import io.reactivex.Flowable;
+import me.diogo.openaijava.operation.CalculatorShipping;
 import me.diogo.openaijava.operation.FileConverter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ class OpenAiClientTest {
     private OpenAiClient<List<ChatCompletionChoice>, Flowable<ChatCompletionChunk>> openAiClient;
     @Autowired
     private FileConverter fileConverter;
+    @Autowired
+    private CalculatorShipping calculatorShipping;
 
     /*
      * CHAT
@@ -93,7 +96,7 @@ class OpenAiClientTest {
 
     @Test
     void successToCallAssistant() {
-        final var response = openAiClient.assistantRequest("List two products that you sell?", null);
+        final var response = openAiClient.assistantRequest("List two products that you sell?", null, null);
 
         assertTrue(response.isPresent());
         assertTrue(OpenAiClient.cleanContent(response).contains("1"));
@@ -103,24 +106,24 @@ class OpenAiClientTest {
 
     @Test
     void successToCallAssistantWithoutHistory() {
-        final var response = openAiClient.assistantRequest("Could you list more two?", null);
+        final var response = openAiClient.assistantRequest("Could you list more two?", null, null);
 
         assertTrue(response.isPresent());
-        assertFalse(OpenAiClient.cleanContent(response).contains("1"));
-        assertFalse(OpenAiClient.cleanContent(response).contains("2"));
+        assertTrue(OpenAiClient.cleanContent(response).contains("1"));
+        assertTrue(OpenAiClient.cleanContent(response).contains("2"));
         assertFalse(OpenAiClient.cleanContent(response).contains("3"));
     }
 
     @Test
     void successToCallAssistantWithHistory() {
-        final var firstResponse = openAiClient.assistantRequest("List two products that you sell?", null);
+        final var firstResponse = openAiClient.assistantRequest("List two products that you sell?", null, null);
 
         assertTrue(firstResponse.isPresent());
         assertTrue(OpenAiClient.cleanContent(firstResponse).contains("1"));
         assertTrue(OpenAiClient.cleanContent(firstResponse).contains("2"));
         assertFalse(OpenAiClient.cleanContent(firstResponse).contains("3"));
 
-        final var response = openAiClient.assistantRequest("Could you list more two?", firstResponse.get().getThreadId());
+        final var response = openAiClient.assistantRequest("Could you list more two?", firstResponse.get().getThreadId(), null);
 
         assertTrue(response.isPresent());
         assertFalse(OpenAiClient.cleanContent(response).contains("1"));
@@ -128,5 +131,29 @@ class OpenAiClientTest {
         assertTrue(OpenAiClient.cleanContent(response).contains("3"));
         assertTrue(OpenAiClient.cleanContent(response).contains("4"));
         assertFalse(OpenAiClient.cleanContent(response).contains("5"));
+    }
+
+    @Test
+    void successToCallAssistantWithFunction() {
+        final var firstResponse = openAiClient.assistantRequest("What is the shipping cost for 5 products in Guarapari-ES?", null, calculatorShipping.getCalculateShippingFunction());
+
+        assertTrue(firstResponse.isPresent());
+        assertTrue(OpenAiClient.cleanContent(firstResponse).contains("7.5"));
+        assertFalse(OpenAiClient.cleanContent(firstResponse).contains("22.5"));
+    }
+
+    @Test
+    void successToCallAssistantWithFunctionAndHistory() {
+        final var firstResponse = openAiClient.assistantRequest("What is the shipping cost for 5 products in Guarapari-ES?", null, calculatorShipping.getCalculateShippingFunction());
+
+        assertTrue(firstResponse.isPresent());
+        assertTrue(OpenAiClient.cleanContent(firstResponse).contains("7.5"));
+        assertFalse(OpenAiClient.cleanContent(firstResponse).contains("22.5"));
+
+        final var secondResponse = openAiClient.assistantRequest("And to Blumenau-SC?", firstResponse.get().getThreadId(), calculatorShipping.getCalculateShippingFunction());
+
+        assertTrue(secondResponse.isPresent());
+        assertFalse(OpenAiClient.cleanContent(secondResponse).contains("7.5"));
+        assertTrue(OpenAiClient.cleanContent(secondResponse).contains("22.5"));
     }
 }

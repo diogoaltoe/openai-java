@@ -1,6 +1,6 @@
 package me.diogo.openaijava.presentation;
 
-import me.diogo.openaijava.presentation.dto.QuestionRequest;
+import me.diogo.openaijava.presentation.dto.ChatRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +18,7 @@ class ChatControllerTest {
 
     @Test
     public void testAnswerQuestion() {
-        final var request = new QuestionRequest("What is an ecommerce?");
+        final var request = new ChatRequest("What is an ecommerce?");
         final var response = restTemplate.postForEntity("/chat", request, String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

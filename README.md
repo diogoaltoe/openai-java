@@ -1,5 +1,21 @@
 # OpenAI Java
+
 OpenAI GPT integration project using Java.
+
+
+## Features
+
+This project provide the below features:
+- OpenAI Chat
+- OpenAI Assistants
+- Token Counter
+- OpenAI Exception Handler
+- SpringDoc OpenAPI UI (Swagger)
+- Communication with Stream
+- Assistant keeping or not the thread history
+- Knowledge Retrieval
+- Function Calling
+
 
 ## Installation
 
@@ -8,14 +24,31 @@ Download the project using the below GIT command:
 $ git clone https://github.com/diogoaltoe/openai-java.git
 ```
 
+
 ## Usage
 
-### Environment Variable
+Basically, you can use this project in 2 ways:
+- Via `Swagger`:
+  - After run the `MainApplication`, to access the Swagger page, open this link: http://localhost:8080/swagger
+- Via `Test Cases`:
+  - Go to `test` folder to check the different ways to test and use the features.
+  - **NOTE:** The test cases have a few examples on how to use the project, maybe it can help you.
 
-In the `application.properties` file inside `src/main/resources` folder, set:
-- `openai-api-key=${OPENAI_API_KEY}` with your OpenAi API key.
+Below we have more details on how to setup the OpenAI features.
+
+### OpenAI API
+
+To use `OpenAI API`, you need to:
+- Go to OpenAI Platform Playground (https://platform.openai.com);
+- In the left menu, click on `API keys` option;
+- Click on `+ Create new secret key` button;
+- Fill the `Name` field and click on `Create secret key` button;
+- Copy the `key` and set the `OPENAI_API_KEY` environment variable with it.
+  - This environment variable will be used in the `application.properties` file inside `src/main/resources` folder:
+    - `openai-api-key=${OPENAI_API_KEY}`
 
 ### OpenAI Assistants
+
 To use `Assistants` feature, you need to:
 - Go to OpenAI Platform Playground (https://platform.openai.com/playground);
 - Select `Assistants` option;
@@ -33,7 +66,7 @@ To use `Assistants` feature, you need to:
 
 ### Knowledge Retrieval
 
-To work with Retrieval feature, you need to:
+To work with `Retrieval` feature, you need to:
 - Go to OpenAI Platform Playground (https://platform.openai.com/playground);
 - Select `Assistants` option;
 - In `TOOLS` option:
@@ -42,23 +75,16 @@ To work with Retrieval feature, you need to:
     - info.md
     - policy.md
 
-### Swagger
+### Functions Calling
 
-After run the `MainApplication`, to access the Swagger page, open this link: http://localhost:8080/swagger
-
-
-## Features
-
-This project provide the below features:
-- OpenAI Chat
-- OpenAI Assistants
-- Token Counter
-- OpenAI Exception Handler
-- SpringDoc OpenAPI UI (Swagger)
-- Communication with Stream
-- Assistant keeping or not the thread history
-- Knowledge Retrieval
-- Function Calling
+To work with `Functions` feature, you need to:
+- Go to OpenAI Platform Playground (https://platform.openai.com/playground);
+- Select `Assistants` option;
+- In `TOOLS` option:
+  - In `Functions`, click in `+Function` button;
+  - Open the `calculateShipping.json` file inside `openai-java/src/main/resources`, copy the content and paste it in the function field;
+  - Then, click on `Save` button;
+  - It should save the new function and show below `Functions` the `calculateShipping` function name.
 
 
 ## Libraries

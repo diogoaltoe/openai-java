@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ProductUseCaseTest {
+class ChatUseCaseTest {
     @Autowired
-    ProductUseCase productUseCase;
+    ChatUseCase chatUseCase;
 
     @Test
     void successToGetCategory() {
-        final String category = productUseCase.findCategory("sunglasses");
+        final String category = chatUseCase.findCategory("sunglasses");
 
         Assertions.assertNotNull(category);
         Assertions.assertEquals("Apparel and Fashion", category);
